@@ -1,5 +1,6 @@
 const { request, response } = require("express");
-const { getFeedRss } = require("../helpers/getFeedRss");
+const { getFeedRss, saveFeedRssItems } = require("../helpers/getFeedRss");
+const { getAllWebsites } = require("../helpers/getWebsites");
 const WebSite = require("../models/webSite");
 
 const createWebSite = async (req = request, res = response) => {
@@ -50,6 +51,24 @@ const createWebSite = async (req = request, res = response) => {
   }
 };
 
+const updateWebsites = async (req, res) => {
+  try {
+    const websites = await getAllWebsites();
+    if (!websites) {
+      return res.status(200).json({ ok: true, msg: "all updated" });
+    }
+    for (const website of websites) {
+      const feedIds = await saveFeedRssItems(website.linkFeed);
+      website.feeds = [...website.feeds, ...feedIds];
+      await website.save();
+    }
+    res.status(200).json({ ok: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   createWebSite,
+  updateWebsites,
 };

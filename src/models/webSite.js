@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, SchemaTypes } = require("mongoose");
 
 const webSiteSchema = Schema({
   name: {
@@ -19,6 +19,13 @@ const webSiteSchema = Schema({
     type: String,
     required: true,
   },
+  feeds: [
+    {
+      type: SchemaTypes.ObjectId,
+      ref: "feed",
+      default: [],
+    },
+  ],
 });
 
 module.exports = model("webSite", webSiteSchema);
