@@ -1,7 +1,10 @@
 const Parser = require("rss-parser");
 const parser = new Parser();
 const { stripHtml } = require("string-strip-html");
+
 const Feed = require("../models/feed");
+
+const { getAllWebsites } = require("./getWebsites");
 
 const getFeedRss = async (link) => {
   return new Promise((resolve, reject) => {
@@ -47,7 +50,24 @@ const saveFeedRssItems = async (urlFeed) => {
   }
 };
 
+const updateFeedRssItems = async () => {
+  try {
+    const websites = await getAllWebsites();
+    if (websites) {
+      for (const website of websites) {
+        const feedIds = await saveFeedRssItems(website.linkFeed);
+        website.feeds = [...website.feeds, ...feedIds];
+        await website.save();
+      }
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 module.exports = {
   getFeedRss,
-  saveFeedRssItems,
+  updateFeedRssItems,
 };
