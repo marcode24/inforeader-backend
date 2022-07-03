@@ -51,15 +51,17 @@ const createWebSite = async (req = request, res = response) => {
 };
 
 const updateWebsites = async (req, res) => {
-  const result = await updateFeedRssItems();
-  if (!result) {
+  const { status, rejectedLinks = null } = await updateFeedRssItems();
+  if (!status) {
     return res.status(500).json({
-      ok: true,
+      ok: false,
       msg: "Something went wrong, try again",
     });
   }
+
   res.status(200).json({
     ok: true,
+    rejectedLinks,
     msg: "all updated",
   });
 };
