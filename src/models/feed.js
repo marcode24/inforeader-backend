@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, SchemaTypes } = require("mongoose");
 
 const feedSchema = Schema({
   writer: {
@@ -18,6 +18,15 @@ const feedSchema = Schema({
   link: {
     type: String,
     required: true,
+  },
+  image: {
+    type: String,
+    default: null,
+  },
+  website: {
+    type: SchemaTypes.ObjectId,
+    ref: "webSite",
+    default: [],
   },
 });
 

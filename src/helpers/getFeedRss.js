@@ -1,10 +1,11 @@
 const Parser = require("rss-parser");
 const parser = new Parser();
 const { stripHtml } = require("string-strip-html");
+const { regexFirstImage } = require("../constants/regex");
 
 const Feed = require("../models/feed");
 
-const { getAllWebsites, getWebsiteById } = require("./getWebsites");
+const { getAllWebsites } = require("./getWebsites");
 
 const getFeedRss = async (link) => {
   return new Promise((resolve, reject) => {
@@ -17,7 +18,6 @@ const getFeedRss = async (link) => {
 const saveFeedRssItems = async (websites) => {
   try {
     const feedRssPromises = [];
-
     websites.forEach((item) => feedRssPromises.push(getFeedRss(item.linkFeed)));
     let allRss = await Promise.allSettled(feedRssPromises);
     const rejectedLinks = [];
@@ -34,7 +34,7 @@ const saveFeedRssItems = async (websites) => {
       }
     });
 
-    // filter rss resolved
+    // filter rss resolved and set Website ID from DB
     allRss = allRss
       .filter((rss) => rss.status === "fulfilled")
       .map((rss) => {
@@ -48,7 +48,7 @@ const saveFeedRssItems = async (websites) => {
 
     if (allRss.length > 0) {
       for (const itemRss of allRss) {
-        const websiteDB = await getWebsiteById(itemRss.websiteDB);
+        // const websiteDB = await getWebsiteById(itemRss.websiteDB);
         const itemsFeed = itemRss.value.items;
         for (const item of itemsFeed) {
           // validate if feed exist in DB
@@ -61,20 +61,26 @@ const saveFeedRssItems = async (websites) => {
           );
           if (!feedExist) {
             // create new feed
+            const itemContent = stripHtml(item.content, {
+              ignoreTags: ["img", "p", "a", "strong", "h2", "ul", "li"],
+              skipHtmlDecoding: false,
+            }).result;
+            // get first image from content
+            const urls = [];
+            while ((m = regexFirstImage.exec(itemContent))) {
+              urls.push(m[1]);
+            }
             const newFed = new Feed({
               writer: item.author || item.creator || "",
               title: item.title || "",
               pubDate: item.isoDate,
-              content: stripHtml(item.content, {
-                ignoreTags: ["img", "p", "a", "strong", "h2", "ul", "li"],
-                skipHtmlDecoding: false,
-              }).result,
+              content: itemContent,
+              image: urls[0] || null,
               link: item.link,
+              website: itemRss.websiteDB,
             });
-            const feedSaved = await newFed.save();
-            websiteDB.feeds.push(feedSaved.id);
+            await newFed.save();
           }
-          await websiteDB.save();
         }
       }
     }

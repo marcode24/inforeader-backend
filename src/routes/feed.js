@@ -1,8 +1,9 @@
 const { Router } = require("express");
-// const { getRss } = require("../controllers/rss");
+
+const { getFeeds } = require("../controllers/feed");
 
 const router = Router();
 
-// router.get("/", getRss);
+router.get("/", getFeeds);
 
 module.exports = router;
