@@ -1,9 +1,10 @@
 const { Router } = require("express");
 
-const { getFeeds } = require("../controllers/feed");
+const { getFeeds, getFeedById } = require("../controllers/feed");
 
 const router = Router();
 
 router.get("/", getFeeds);
+router.get("/:id", getFeedById);
 
 module.exports = router;
