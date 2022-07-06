@@ -5,7 +5,7 @@ const Feed = require("../models/feed");
 const getFeeds = async (req = request, res = response) => {
   try {
     const { skip = 0, limit = 20 } = req.query;
-    const feeds = await Feed.find({}, "title pubDate image", {
+    const feeds = await Feed.find({}, "title pubDate image writer", {
       limit,
       skip,
       sort: { pubDate: -1 },
@@ -59,7 +59,47 @@ const getFeedById = async (req = request, res = response) => {
   }
 };
 
+const getFeedsByWebsite = async (req = request, res = response) => {
+  const id = req.params.id || null;
+  const { skip = 0, limit = 10 } = req.query;
+  if (!id) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Must provide an Id",
+    });
+  }
+  if (!isMongoId(id)) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Id is not valid",
+    });
+  }
+
+  try {
+    const feeds = await Feed.find(
+      { website: id },
+      "title pubDate image writer",
+      {
+        limit,
+        skip,
+        sort: { pubDate: -1 },
+      }
+    ).populate({ path: "website", select: "name" });
+    res.status(200).json({
+      ok: true,
+      feeds,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "something went wrong",
+    });
+  }
+};
+
 module.exports = {
   getFeeds,
   getFeedById,
+  getFeedsByWebsite,
 };

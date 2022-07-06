@@ -66,7 +66,30 @@ const updateWebsites = async (req, res) => {
   });
 };
 
+const getWebsites = async (req = request, res = response) => {
+  const { skip = 0, limit = 5, all = false } = req.query;
+  let websites;
+  try {
+    if (!JSON.parse(all)) {
+      websites = await WebSite.find().skip(skip).limit(limit);
+    } else {
+      websites = await WebSite.find();
+    }
+    res.status(200).json({
+      ok: true,
+      websites,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createWebSite,
   updateWebsites,
+  getWebsites,
 };
