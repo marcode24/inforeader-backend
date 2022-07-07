@@ -48,7 +48,7 @@ const userSchema = Schema({
   savedFeeds: [
     {
       type: SchemaTypes.ObjectId,
-      ref: "reed",
+      ref: "feed",
       default: [],
     },
   ],

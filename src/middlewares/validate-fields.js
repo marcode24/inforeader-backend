@@ -1,4 +1,5 @@
 const { request, response } = require("express");
+const { isMongoId } = require("../helpers/mongo-id");
 const {
   validateEmail,
   validatePassword,
@@ -26,7 +27,27 @@ const validateLogin = (req = request, res = response, next) => {
   next();
 };
 
+const validateResource = (req = request, res = response, next) => {
+  const validOptions = ["subscription", "read", "saved"];
+  const option = req.params.option || null;
+  if (!validOptions.includes(option)) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Must provide a valid option",
+    });
+  }
+  const resourceID = req.params.id;
+  if (!resourceID || !isMongoId(resourceID)) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Must provide a valid resource id",
+    });
+  }
+  next();
+};
+
 module.exports = {
   validateCreateUser,
   validateLogin,
+  validateResource,
 };

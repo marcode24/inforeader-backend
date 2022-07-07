@@ -1,9 +1,19 @@
 const { Router } = require("express");
-const { createUser } = require("../controllers/user");
-const { validateCreateUser } = require("../middlewares/validate-fields");
+const { createUser, modifyPreferences } = require("../controllers/user");
+const {
+  validateCreateUser,
+  validateResource,
+} = require("../middlewares/validate-fields");
+const { validateJWT } = require("../middlewares/validate-jwt");
 
 const router = Router();
 
 router.post("/", [validateCreateUser], createUser);
+
+router.patch(
+  "/:option/:id",
+  [validateJWT, validateResource],
+  modifyPreferences
+);
 
 module.exports = router;
