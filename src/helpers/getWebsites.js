@@ -5,6 +5,11 @@ const getAllWebsites = async () => {
   return websites;
 };
 
+const getWebsiteById = async (id) => {
+  return await WebSite.findById(id);
+};
+
 module.exports = {
   getAllWebsites,
+  getWebsiteById,
 };

@@ -1,6 +1,5 @@
 const { request, response } = require("express");
-const { getFeedRss, saveFeedRssItems } = require("../helpers/getFeedRss");
-const { getAllWebsites } = require("../helpers/getWebsites");
+const { getFeedRss, updateFeedRssItems } = require("../helpers/getFeedRss");
 const WebSite = require("../models/webSite");
 
 const createWebSite = async (req = request, res = response) => {
@@ -52,23 +51,45 @@ const createWebSite = async (req = request, res = response) => {
 };
 
 const updateWebsites = async (req, res) => {
+  const { status, rejectedLinks = null } = await updateFeedRssItems();
+  if (!status) {
+    return res.status(500).json({
+      ok: false,
+      msg: "Something went wrong, try again",
+    });
+  }
+
+  res.status(200).json({
+    ok: true,
+    rejectedLinks,
+    msg: "all updated",
+  });
+};
+
+const getWebsites = async (req = request, res = response) => {
+  const { skip = 0, limit = 5, all = false } = req.query;
+  let websites;
   try {
-    const websites = await getAllWebsites();
-    if (!websites) {
-      return res.status(200).json({ ok: true, msg: "all updated" });
+    if (!JSON.parse(all)) {
+      websites = await WebSite.find().skip(skip).limit(limit);
+    } else {
+      websites = await WebSite.find();
     }
-    for (const website of websites) {
-      const feedIds = await saveFeedRssItems(website.linkFeed);
-      website.feeds = [...website.feeds, ...feedIds];
-      await website.save();
-    }
-    res.status(200).json({ ok: true });
+    res.status(200).json({
+      ok: true,
+      websites,
+    });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "Something went wrong",
+    });
   }
 };
 
 module.exports = {
   createWebSite,
   updateWebsites,
+  getWebsites,
 };

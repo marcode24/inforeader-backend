@@ -6,7 +6,7 @@ require("dotenv").config();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/rss", require("./routes/rss"));
+app.use("/api/feed", require("./routes/feed"));
 app.use("/api/website", require("./routes/webSite"));
 
 module.exports = app;

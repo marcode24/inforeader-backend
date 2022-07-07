@@ -1,8 +1,13 @@
 const { Router } = require("express");
-const { createWebSite, updateWebsites } = require("../controllers/webSite");
+const {
+  createWebSite,
+  updateWebsites,
+  getWebsites,
+} = require("../controllers/webSite");
 
 const router = Router();
 
+router.get("/", getWebsites);
 router.post("/", createWebSite);
 router.post("/update", updateWebsites);
 
