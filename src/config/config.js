@@ -10,6 +10,7 @@ const envVarsSchema = joi
     MONGO_PORT: joi.number().positive().required(),
     MONGO_HOST: joi.string().required(),
     MONGO_CONNECTION: joi.string().required().valid("mongodb"),
+    JWT_SECRET: joi.string().required(),
   })
   .unknown();
 
@@ -31,6 +32,7 @@ const configEnv = {
     connection: envVars.MONGO_CONNECTION,
   },
   port: envVars.PORT,
+  jwtSecret: envVars.JWT_SECRET,
 };
 
 module.exports = {
