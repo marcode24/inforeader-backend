@@ -5,6 +5,8 @@ const {
   validatePassword,
 } = require("../utils/regex-validations");
 
+const validOptions = ["subscription", "read", "saved"];
+
 const validateCreateUser = (req = request, res = response, next) => {
   const { email = null, password = null } = req.body;
   if (!validateEmail(email) || !validatePassword(password)) {
@@ -28,7 +30,6 @@ const validateLogin = (req = request, res = response, next) => {
 };
 
 const validateResource = (req = request, res = response, next) => {
-  const validOptions = ["subscription", "read", "saved"];
   const option = req.params.option || null;
   if (!validOptions.includes(option)) {
     return res.status(400).json({
@@ -46,8 +47,21 @@ const validateResource = (req = request, res = response, next) => {
   next();
 };
 
+const validateResourceFilter = (req = request, res = response, next) => {
+  const filter = req.params.filter || null;
+  if (!validOptions.includes(filter)) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Must provide a valid filter",
+    });
+  }
+  req.filter = filter;
+  next();
+};
+
 module.exports = {
   validateCreateUser,
   validateLogin,
   validateResource,
+  validateResourceFilter,
 };

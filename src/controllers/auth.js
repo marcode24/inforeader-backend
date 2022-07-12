@@ -10,19 +10,23 @@ const login = async (req, res = response) => {
     if (!userExist || userExist.google) {
       return res.status(400).json({
         ok: false,
-        msg: "User y/o password incorrectos",
+        msg: "email or password are incorrect",
       });
     }
     const validPassword = bcrypt.compareSync(password, userExist.password);
     if (!validPassword) {
       return res.status(400).json({
         ok: false,
-        msg: "User y/o password incorrectos",
+        msg: "email or password are incorrect",
       });
     }
-    const token = await generateJWT(userExist.id);
+    const [token, userData] = await Promise.all([
+      generateJWT(userExist.id),
+      User.findById(userExist.id, "-password"),
+    ]);
     return res.status(200).json({
       ok: true,
+      user: userData,
       token,
     });
   } catch (error) {

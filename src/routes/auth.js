@@ -5,7 +5,7 @@ const { login, renewToken } = require("../controllers/auth");
 
 const router = Router();
 
-router.post("/", [validateLogin], login);
-router.post("/renew", [validateJWT], renewToken);
+router.post("/login", [validateLogin], login);
+router.get("/renew", [validateJWT], renewToken);
 
 module.exports = router;
