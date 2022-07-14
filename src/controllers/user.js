@@ -89,7 +89,35 @@ const modifyPreferences = async (req = request, res = response) => {
   }
 };
 
+const setTheme = async (req = request, res = response) => {
+  try {
+    const idUser = req.id;
+    const darkMode = req.body.darkMode || false;
+    const userDB = await User.findById(idUser);
+    if (!userDB) {
+      return res.json({
+        ok: false,
+        msg: "user not found, try again",
+      });
+    }
+
+    userDB.darkMode = darkMode;
+    await userDB.save();
+    res.status(200).json({
+      ok: true,
+      msg: "theme updated correctly",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createUser,
   modifyPreferences,
+  setTheme,
 };

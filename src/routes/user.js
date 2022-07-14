@@ -1,5 +1,9 @@
 const { Router } = require("express");
-const { createUser, modifyPreferences } = require("../controllers/user");
+const {
+  createUser,
+  modifyPreferences,
+  setTheme,
+} = require("../controllers/user");
 const {
   validateCreateUser,
   validateResource,
@@ -10,6 +14,7 @@ const router = Router();
 
 router.post("/", [validateCreateUser], createUser);
 
+router.patch("/theme", [validateJWT], setTheme);
 router.patch(
   "/:option/:id",
   [validateJWT, validateResource],

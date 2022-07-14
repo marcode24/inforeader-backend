@@ -26,7 +26,7 @@ const feedSchema = Schema({
   website: {
     type: SchemaTypes.ObjectId,
     ref: "webSite",
-    default: [],
+    default: {},
   },
 });
 
