@@ -6,6 +6,7 @@ const Website = require("../models/webSite");
 const Feed = require("../models/feed");
 
 const { modifiyPreference } = require("../helpers/modify-preferences");
+const { generateJWT } = require("../utils/jwt");
 
 const createUser = async (req = request, res = response) => {
   try {
@@ -20,10 +21,15 @@ const createUser = async (req = request, res = response) => {
     const newUser = new User({ email });
     const salt = bcrypt.genSaltSync();
     newUser.password = bcrypt.hashSync(password, salt);
-    const userCreated = await newUser.save();
+    const userSaved = await newUser.save();
+    const [token, userData] = await Promise.all([
+      generateJWT(userSaved.id),
+      User.findById(userSaved.id, "-password"),
+    ]);
     res.status(201).json({
       ok: true,
-      user: userCreated,
+      user: userData,
+      token,
     });
   } catch (error) {
     console.log(error);
