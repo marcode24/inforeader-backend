@@ -122,8 +122,28 @@ const setTheme = async (req = request, res = response) => {
   }
 };
 
+const updateInfo = async (req = request, res = response) => {
+  try {
+    const userDB = await User.findById(req.id);
+    userDB.name = req.body.name || null;
+    userDB.lastName = req.body.lastName || null;
+    await userDB.save();
+    res.json({
+      ok: true,
+      msg: "user info updated correctly",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createUser,
   modifyPreferences,
   setTheme,
+  updateInfo,
 };

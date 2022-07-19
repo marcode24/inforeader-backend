@@ -3,6 +3,7 @@ const { isMongoId } = require("../helpers/mongo-id");
 const {
   validateEmail,
   validatePassword,
+  validateText,
 } = require("../utils/regex-validations");
 
 const validOptions = ["subscription", "read", "saved"];
@@ -59,9 +60,28 @@ const validateResourceFilter = (req = request, res = response, next) => {
   next();
 };
 
+const validateUserInfo = (req = request, res = response, next) => {
+  const name = req.body.name || null;
+  const lastName = req.body.lastName || null;
+  if (!name || (lastName && !name)) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Must provide a name",
+    });
+  }
+  if (!validateText(name) || (lastName && !validateText(lastName))) {
+    return res.status(400).json({
+      ok: false,
+      msg: "Fields have incorrect format",
+    });
+  }
+  next();
+};
+
 module.exports = {
   validateCreateUser,
   validateLogin,
   validateResource,
   validateResourceFilter,
+  validateUserInfo,
 };
