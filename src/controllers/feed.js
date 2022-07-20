@@ -1,6 +1,7 @@
 const { request, response } = require("express");
 const { isMongoId } = require("../helpers/mongo-id");
 const Feed = require("../models/feed");
+const User = require("../models/user");
 
 const getFeeds = async (req = request, res = response) => {
   try {
@@ -98,8 +99,43 @@ const getFeedsByWebsite = async (req = request, res = response) => {
   }
 };
 
+const getFeedsByUser = async (req = request, res = response) => {
+  try {
+    const { id: idUser, filter } = req;
+
+    const option = filter === "subscription" ? `${filter}s` : `${filter}Feeds`;
+    const selectFieldsUser = `_id ${option}`;
+    const fieldToFilter = filter === "subscription" ? "website" : "_id";
+    const userDB = await User.findById(idUser, selectFieldsUser);
+    let feeds;
+    const { skip = 0, limit = 10 } = req.query;
+    feeds = await Feed.find(
+      {
+        [fieldToFilter]: { $in: userDB[option] },
+      },
+      "title pubDate image writer",
+      {
+        limit,
+        skip,
+        sort: { pubDate: -1 },
+      }
+    ).populate({ path: "website", select: "name" });
+    res.json({
+      ok: true,
+      feeds,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "something went wrong",
+    });
+  }
+};
+
 module.exports = {
   getFeeds,
   getFeedById,
   getFeedsByWebsite,
+  getFeedsByUser,
 };

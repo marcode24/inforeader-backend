@@ -6,6 +6,7 @@ const Website = require("../models/webSite");
 const Feed = require("../models/feed");
 
 const { modifiyPreference } = require("../helpers/modify-preferences");
+const { generateJWT } = require("../utils/jwt");
 
 const createUser = async (req = request, res = response) => {
   try {
@@ -20,10 +21,15 @@ const createUser = async (req = request, res = response) => {
     const newUser = new User({ email });
     const salt = bcrypt.genSaltSync();
     newUser.password = bcrypt.hashSync(password, salt);
-    const userCreated = await newUser.save();
+    const userSaved = await newUser.save();
+    const [token, userData] = await Promise.all([
+      generateJWT(userSaved.id),
+      User.findById(userSaved.id, "-password"),
+    ]);
     res.status(201).json({
       ok: true,
-      user: userCreated,
+      user: userData,
+      token,
     });
   } catch (error) {
     console.log(error);
@@ -89,7 +95,55 @@ const modifyPreferences = async (req = request, res = response) => {
   }
 };
 
+const setTheme = async (req = request, res = response) => {
+  try {
+    const idUser = req.id;
+    const darkMode = req.body.darkMode || false;
+    const userDB = await User.findById(idUser);
+    if (!userDB) {
+      return res.json({
+        ok: false,
+        msg: "user not found, try again",
+      });
+    }
+
+    userDB.darkMode = darkMode;
+    await userDB.save();
+    res.status(200).json({
+      ok: true,
+      msg: "theme updated correctly",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Something went wrong",
+    });
+  }
+};
+
+const updateInfo = async (req = request, res = response) => {
+  try {
+    const userDB = await User.findById(req.id);
+    userDB.name = req.body.name || null;
+    userDB.lastName = req.body.lastName || null;
+    await userDB.save();
+    res.json({
+      ok: true,
+      msg: "user info updated correctly",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createUser,
   modifyPreferences,
+  setTheme,
+  updateInfo,
 };
