@@ -4,8 +4,7 @@ const app = express();
 require("dotenv").config();
 
 const corsOptions = {
-  // add cliente url
-  origin: ["http://localhost:4200"],
+  origin: ["http://localhost:4200", "https://inforeader.netlify.app"],
   methods: "GET, PUT, POST, PATCH",
 };
 
