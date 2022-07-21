@@ -4,7 +4,7 @@ const app = express();
 require("dotenv").config();
 
 const corsOptions = {
-  // add cliente url
+  // add cliente url here
   origin: ["http://localhost:4200"],
   methods: "GET, PUT, POST, PATCH",
 };
