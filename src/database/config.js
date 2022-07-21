@@ -3,10 +3,8 @@ const { configEnv } = require("../config/config");
 
 const dbConnection = async () => {
   try {
-    const mongoConfig = configEnv.mongo;
-    const { connection, user, password, host, port } = mongoConfig;
-    const uri = `${connection}://${user}:${password}@${host}:${port}/?authSource=admin&readPreference=primary`;
-    await mongoose.connect(uri);
+    const { mongoUrl } = configEnv;
+    await mongoose.connect(mongoUrl);
     console.log("DB online");
   } catch (error) {
     console.log(error);

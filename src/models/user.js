@@ -1,4 +1,5 @@
 const { Schema, model, SchemaTypes } = require("mongoose");
+const { defaultImageUser } = require("../constants/images");
 
 const userSchema = Schema({
   email: {
@@ -17,7 +18,7 @@ const userSchema = Schema({
   },
   image: {
     type: String,
-    default: null,
+    default: defaultImageUser,
   },
   active: {
     type: Boolean,

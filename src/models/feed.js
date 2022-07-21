@@ -1,4 +1,5 @@
 const { Schema, model, SchemaTypes } = require("mongoose");
+const { defaultImageWebsite } = require("../constants/images");
 
 const feedSchema = Schema({
   writer: {
@@ -21,7 +22,7 @@ const feedSchema = Schema({
   },
   image: {
     type: String,
-    default: null,
+    default: defaultImageWebsite,
   },
   website: {
     type: SchemaTypes.ObjectId,

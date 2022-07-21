@@ -3,7 +3,13 @@ const cors = require("cors");
 const app = express();
 require("dotenv").config();
 
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:4200"],
+  methods: "GET, PUT, POST, PATCH",
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.use("/api/feed", require("./routes/feed"));

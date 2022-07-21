@@ -2,9 +2,9 @@ const cron = require("node-cron");
 const { updateFeedRssItems } = require("../helpers/getFeedRss");
 
 const jobFeeds = cron.schedule(
-  "*/30 * * * *",
+  "*/15 * * * *",
   () => {
-    // update feeds automatically every 30 minutes
+    // update feeds automatically every 15 minutes
     updateFeedRssItems();
   },
   {
