@@ -18,4 +18,8 @@ app.use("/api/website", require("./routes/webSite"));
 app.use("/api/user", require("./routes/user"));
 app.use("/api/auth", require("./routes/auth"));
 
+app.get("*", (req, res) => {
+  res.send("Hello world");
+});
+
 module.exports = app;
