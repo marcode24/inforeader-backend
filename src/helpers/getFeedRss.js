@@ -48,7 +48,6 @@ const saveFeedRssItems = async (websites) => {
 
     if (allRss.length > 0) {
       for (const itemRss of allRss) {
-        // const websiteDB = await getWebsiteById(itemRss.websiteDB);
         const itemsFeed = itemRss.value.items;
         for (const item of itemsFeed) {
           // validate if feed exist in DB
@@ -56,8 +55,9 @@ const saveFeedRssItems = async (websites) => {
             {
               writer: item.author || item.creator,
               title: item.title,
+              pubDate: item.isoDate,
             },
-            "title"
+            "title writer pubDate"
           );
           if (!feedExist) {
             // create new feed
@@ -70,7 +70,7 @@ const saveFeedRssItems = async (websites) => {
             while ((m = regexFirstImage.exec(itemContent))) {
               urls.push(m[1]);
             }
-            const newFed = new Feed({
+            const newFeed = new Feed({
               writer: item.author || item.creator || "",
               title: item.title || "",
               pubDate: item.isoDate,
@@ -79,7 +79,7 @@ const saveFeedRssItems = async (websites) => {
               link: item.link,
               website: itemRss.websiteDB,
             });
-            await newFed.save();
+            await newFeed.save();
           }
         }
       }

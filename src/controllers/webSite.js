@@ -1,4 +1,5 @@
 const { request, response } = require("express");
+const { defaultImageWebsite } = require("../constants/images");
 const { getFeedRss, updateFeedRssItems } = require("../helpers/getFeedRss");
 const WebSite = require("../models/webSite");
 
@@ -29,7 +30,7 @@ const createWebSite = async (req = request, res = response) => {
 
   try {
     const { title, description, link, ...feed } = await getFeedRss(url);
-    const webSiteImage = (feed.image && feed.image.url) || "";
+    const webSiteImage = (feed.image && feed.image.url) || defaultImageWebsite;
     const newWebSite = new WebSite({
       name: title,
       image: webSiteImage,
@@ -45,7 +46,7 @@ const createWebSite = async (req = request, res = response) => {
   } catch (error) {
     return res.status(404).json({
       ok: false,
-      msg: "feed not found, try again",
+      msg: "something went wrong, try again",
     });
   }
 };

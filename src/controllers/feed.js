@@ -107,18 +107,19 @@ const getFeedsByUser = async (req = request, res = response) => {
     const selectFieldsUser = `_id ${option}`;
     const fieldToFilter = filter === "subscription" ? "website" : "_id";
     const userDB = await User.findById(idUser, selectFieldsUser);
-    let feeds;
+
     const { skip = 0, limit = 10 } = req.query;
+    const sortFeeds = { sort: { pubDate: -1 } };
+    const optionsFinding = { limit, skip };
+    let feeds;
     feeds = await Feed.find(
       {
         [fieldToFilter]: { $in: userDB[option] },
       },
       "title pubDate image writer",
-      {
-        limit,
-        skip,
-        sort: { pubDate: -1 },
-      }
+      filter === "saved"
+        ? { ...optionsFinding }
+        : { ...optionsFinding, sortFeeds }
     ).populate({ path: "website", select: "name" });
     res.json({
       ok: true,
