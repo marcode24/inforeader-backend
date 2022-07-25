@@ -1,4 +1,4 @@
-# InfoReader Frontend
+# InfoReader Backend
 
 ## Get started
 
