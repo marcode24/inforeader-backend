@@ -9,16 +9,18 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api/feed", require("./routes/feed"));
-app.use("/api/website", require("./routes/webSite"));
-app.use("/api/user", require("./routes/user"));
-app.use("/api/auth", require("./routes/auth"));
+const VERSION = "/api/v1";
 
-app.get("*", (req, res) => {
-  res.send("Hello world");
+app.use(`/${VERSION}/feed`, require("./routes/feed"));
+app.use(`/${VERSION}/website`, require("./routes/webSite"));
+app.use(`/${VERSION}/user`, require("./routes/user"));
+app.use(`/${VERSION}/auth`, require("./routes/auth"));
+
+app.get("/", (_, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 module.exports = app;
