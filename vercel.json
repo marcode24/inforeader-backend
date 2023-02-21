@@ -7,7 +7,7 @@
   ],
   "headers": [
     {
-      "src": "/(.*)",
+      "source": "/api/(.*)",
       "dest": "src/index.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "OPTIONS"],
       "headers": [
