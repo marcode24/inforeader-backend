@@ -9,7 +9,12 @@
     {
       "src": "/(.*)",
       "dest": "src/index.js",
-      "methods": ["GET", "POST", "PUT", "PATCH", "OPTIONS"],
+      "methods": ["GET", "POST", "PUT", "PATCH", "OPTIONS"]
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
