@@ -6,7 +6,7 @@ require("dotenv").config();
 
 const corsOptions = {
   origin: ["http://localhost:4200", "https://inforeader.netlify.app"],
-  methods: "GET, PUT, POST, PATCH",
+  methods: "GET, PUT, POST, PATCH, OPTIONS",
 };
 
 app.use(cors(corsOptions));
