@@ -5,7 +5,7 @@ const path = require("path");
 require("dotenv").config();
 
 const corsOptions = {
-  origin: ["http://localhost:4200", "https://inforeader.netlify.app"],
+  origin: ["http://localhost:4200/", "https://inforeader.netlify.app/"],
   methods: "GET, PUT, POST, PATCH, OPTIONS",
 };
 
