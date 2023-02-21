@@ -6,6 +6,7 @@ const {
   getFeedById,
   getFeedsByWebsite,
   getFeedsByUser,
+  searchFeeds,
 } = require("../controllers/feed");
 const { validateResourceFilter } = require("../middlewares/validate-fields");
 
@@ -18,6 +19,7 @@ router.get(
   [validateJWT, validateResourceFilter],
   getFeedsByUser
 );
+router.get("/search", searchFeeds);
 router.get("/:id", getFeedById);
 
 module.exports = router;

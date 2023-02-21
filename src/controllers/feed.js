@@ -134,9 +134,36 @@ const getFeedsByUser = async (req = request, res = response) => {
   }
 };
 
+const searchFeeds = async (req = request, res = response) => {
+  const { q: query, skip = 0, limit = 10 } = req.query;
+  try {
+    const regexQuery = new RegExp(query, "i");
+    const feedsFound = await Feed.find(
+      { title: regexQuery },
+      "title pubDate image writer",
+      {
+        limit,
+        skip,
+        sort: { pubDate: -1 },
+      }
+    ).populate({ path: "website", select: "name" });
+    res.status(200).json({
+      ok: true,
+      feeds: feedsFound,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "something went wrong",
+    });
+  }
+};
+
 module.exports = {
   getFeeds,
   getFeedById,
   getFeedsByWebsite,
   getFeedsByUser,
+  searchFeeds,
 };
