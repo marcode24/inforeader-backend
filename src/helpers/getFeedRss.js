@@ -42,7 +42,7 @@ const saveFeedRssItems = async (websites) => {
           (website) =>
             website.name === rss.value.title || website.link === rss.value.link
         );
-        rss.websiteDB = wbFound.id;
+        rss.websiteDB = wbFound?._id;
         return rss;
       });
 
