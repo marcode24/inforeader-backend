@@ -7,6 +7,8 @@ require("dotenv").config();
 const corsOptions = {
   origin: ["http://localhost:4200/", "https://inforeader.netlify.app/"],
   methods: "GET, PUT, POST, PATCH, OPTIONS",
+  allowedHeaders: "Content-Type, Authorization, Origin, X-Requested-With, Accept",
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -33,6 +35,5 @@ app.use(`${VERSION}/auth`, require("./routes/auth"));
 app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
-
 
 module.exports = app;
