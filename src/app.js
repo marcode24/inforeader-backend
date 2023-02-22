@@ -5,7 +5,7 @@ const path = require("path");
 require("dotenv").config();
 
 const corsOptions = {
-  origin: ["http://localhost:4200/", "https://inforeader.netlify.app/"],
+  origin: ["http://localhost:4200", "https://inforeader.netlify.app"],
   methods: "GET, PUT, POST, PATCH, OPTIONS",
   allowedHeaders: "Content-Type, Authorization, Origin, X-Requested-With, Accept",
   credentials: true,
@@ -14,16 +14,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use((req, res, next) => {
-  if(req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    return res.status(200).json({});
-  }
-  next();
-})
 
 const VERSION = "/api/v1";
 
