@@ -42,19 +42,13 @@ const createUser = async (req = request, res = response) => {
 const modifyPreferences = async (req = request, res = response) => {
   const { id } = req;
   try {
-    const user = await User.findById(
-      id,
-      '_id subscriptions readFeeds savedFeeds',
-    )
+    const user = await User.findById(id, '_id subscriptions readFeeds savedFeeds')
       .populate('subscriptions', '_id')
       .populate('readFeeds', '_id')
       .populate('savedFeeds', '_id');
 
     if (!user) {
-      return res.status(404).json({
-        ok: false,
-        msg: 'user not found',
-      });
+      return res.status(404).json({ ok: false, msg: 'user not found' });
     }
 
     const resourceID = req.params.id;
@@ -68,17 +62,10 @@ const modifyPreferences = async (req = request, res = response) => {
 
     const resourceFound = await resources[option];
     if (!resourceFound) {
-      return res.status(404).json({
-        ok: false,
-        msg: 'resource not found',
-      });
+      return res.status(404).json({ ok: false, msg: 'resource not found' });
     }
 
-    const preferenceModified = await modifiyPreference(
-      option,
-      user,
-      resourceID,
-    );
+    const preferenceModified = await modifiyPreference(option, user, resourceID);
 
     if (!preferenceModified) {
       return res.status(400).json({
@@ -87,16 +74,9 @@ const modifyPreferences = async (req = request, res = response) => {
       });
     }
 
-    return res.json({
-      ok: true,
-      user,
-      msg: 'preferences updated correctly',
-    });
+    return res.status(201).json({ ok: true, msg: 'preferences updated correctly', user });
   } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      msg: 'Something went wrong',
-    });
+    return res.status(500).json({ ok: false, msg: 'Something went wrong' });
   }
 };
 
