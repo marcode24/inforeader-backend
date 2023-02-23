@@ -18,7 +18,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-unused-expressions': 'off',
     'no-return-assign': 'off',
-    'no-console': 'warn',
+    'no-console': 'error',
     'no-debugger': 'error',
     'no-tabs': 'error',
     semi: ['error', 'always'],
@@ -27,5 +27,6 @@ module.exports = {
     'import/newline-after-import': 'error',
     'import/no-duplicates': 'error',
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1, maxBOF: 0 }],
+    'no-underscore-dangle': 'off',
   },
 };
