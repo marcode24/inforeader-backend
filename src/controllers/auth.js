@@ -1,7 +1,7 @@
-const { response } = require("express");
-const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const { generateJWT } = require("../utils/jwt");
+const { response } = require('express');
+const bcrypt = require('bcrypt');
+const User = require('../models/user');
+const { generateJWT } = require('../utils/jwt');
 
 const login = async (req, res = response) => {
   const { email, password } = req.body;
@@ -10,19 +10,19 @@ const login = async (req, res = response) => {
     if (!userExist || userExist.google) {
       return res.status(400).json({
         ok: false,
-        msg: "email or password are incorrect",
+        msg: 'email or password are incorrect',
       });
     }
     const validPassword = bcrypt.compareSync(password, userExist.password);
     if (!validPassword) {
       return res.status(400).json({
         ok: false,
-        msg: "email or password are incorrect",
+        msg: 'email or password are incorrect',
       });
     }
     const [token, userData] = await Promise.all([
       generateJWT(userExist.id),
-      User.findById(userExist.id, "-password"),
+      User.findById(userExist.id, '-password'),
     ]);
     return res.status(200).json({
       ok: true,
@@ -30,18 +30,17 @@ const login = async (req, res = response) => {
       token,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
-      msg: "Talk to Admin",
+      msg: 'Talk to Admin',
     });
   }
 };
 
 const renewToken = async (req, res = response) => {
-  const id = req.id;
+  const { id } = req;
   const token = await generateJWT(id);
-  const user = await User.findById(id, "-password");
+  const user = await User.findById(id, '-password');
   res.json({
     ok: true,
     token,

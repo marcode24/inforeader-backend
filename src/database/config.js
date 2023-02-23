@@ -1,14 +1,16 @@
-const mongoose = require("mongoose");
-const { configEnv } = require("../config/config");
+const mongoose = require('mongoose');
+const { configEnv } = require('../config/config');
 
 const dbConnection = async () => {
   try {
     const { mongoUrl } = configEnv;
     await mongoose.connect(mongoUrl);
-    console.log("DB online");
+    // eslint-disable-next-line no-console
+    console.log('DB online');
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log(error);
-    throw new Error("Error - starting DB");
+    throw new Error('Error - starting DB');
   }
 };
 

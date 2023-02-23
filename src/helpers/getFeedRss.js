@@ -1,19 +1,16 @@
-const Parser = require("rss-parser");
+const Parser = require('rss-parser');
+const { stripHtml } = require('string-strip-html');
+const { regexFirstImage } = require('../constants/regex');
+const Feed = require('../models/feed');
+const { getAllWebsites } = require('./getWebsites');
+
 const parser = new Parser();
-const { stripHtml } = require("string-strip-html");
-const { regexFirstImage } = require("../constants/regex");
 
-const Feed = require("../models/feed");
-
-const { getAllWebsites } = require("./getWebsites");
-
-const getFeedRss = async (link) => {
-  return new Promise((resolve, reject) => {
-    parser.parseURL(link, (err, feed) => {
-      err ? reject(null) : resolve(feed);
-    });
+const getFeedRss = async (link) => new Promise((resolve, reject) => {
+  parser.parseURL(link, (err, feed) => {
+    err ? reject() : resolve(feed);
   });
-};
+});
 
 const saveFeedRssItems = async (websites) => {
   try {
@@ -24,7 +21,7 @@ const saveFeedRssItems = async (websites) => {
 
     allRss.forEach((rss, index) => {
       // check if result has no error
-      if (rss.status === "rejected") {
+      if (rss.status === 'rejected') {
         const { name, link, linkFeed } = websites[index];
         rejectedLinks.push({
           name,
@@ -36,49 +33,55 @@ const saveFeedRssItems = async (websites) => {
 
     // filter rss resolved and set Website ID from DB
     allRss = allRss
-      .filter((rss) => rss.status === "fulfilled")
+      .filter((rss) => rss.status === 'fulfilled')
       .map((rss) => {
         const wbFound = websites.find(
-          (website) =>
-            website.name === rss.value.title || website.link === rss.value.link
+          (website) => website.name === rss.value.title
+            || website.link === rss.value.link,
         );
         rss.websiteDB = wbFound?._id;
         return rss;
       });
 
     if (allRss.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
       for (const itemRss of allRss) {
         const itemsFeed = itemRss.value.items;
+        // eslint-disable-next-line no-restricted-syntax
         for (const item of itemsFeed) {
           // validate if feed exist in DB
+          // eslint-disable-next-line no-await-in-loop
           const feedExist = await Feed.findOne(
             {
               writer: item.author || item.creator,
               title: item.title,
               pubDate: item.isoDate,
             },
-            "title writer pubDate"
+            'title writer pubDate',
           );
           if (!feedExist) {
             // create new feed
             const itemContent = stripHtml(item.content, {
-              ignoreTags: ["img", "p", "a", "strong", "h2", "ul", "li"],
+              ignoreTags: ['img', 'p', 'a', 'strong', 'h2', 'ul', 'li'],
               skipHtmlDecoding: false,
             }).result;
             // get first image from content
             const urls = [];
+            let m;
+            // eslint-disable-next-line no-cond-assign
             while ((m = regexFirstImage.exec(itemContent))) {
               urls.push(m[1]);
             }
             const newFeed = new Feed({
-              writer: item.author || item.creator || "",
-              title: item.title || "",
+              writer: item.author || item.creator || '',
+              title: item.title || '',
               pubDate: item.isoDate,
               content: itemContent,
               image: urls[0] || null,
               link: item.link,
               website: itemRss.websiteDB,
             });
+            // eslint-disable-next-line no-await-in-loop
             await newFeed.save();
           }
         }
@@ -86,8 +89,7 @@ const saveFeedRssItems = async (websites) => {
     }
     return { status: true, rejectedLinks };
   } catch (error) {
-    console.log(error);
-    throw new Error("something went wrong, parsing feeds");
+    throw new Error('something went wrong, parsing feeds');
   }
 };
 
@@ -100,7 +102,6 @@ const updateFeedRssItems = async () => {
     }
     return { status: true };
   } catch (error) {
-    console.log(error);
     return { status: false };
   }
 };

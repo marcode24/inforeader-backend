@@ -1,5 +1,5 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
-const { defaultImageUser } = require("../constants/images");
+const { Schema, model, SchemaTypes } = require('mongoose');
+const { defaultImageUser } = require('../constants/images');
 
 const userSchema = Schema({
   email: {
@@ -35,24 +35,24 @@ const userSchema = Schema({
   subscriptions: [
     {
       type: SchemaTypes.ObjectId,
-      ref: "webSite",
+      ref: 'webSite',
       default: [],
     },
   ],
   readFeeds: [
     {
       type: SchemaTypes.ObjectId,
-      ref: "feed",
+      ref: 'feed',
       default: [],
     },
   ],
   savedFeeds: [
     {
       type: SchemaTypes.ObjectId,
-      ref: "feed",
+      ref: 'feed',
       default: [],
     },
   ],
 });
 
-module.exports = model("user", userSchema);
+module.exports = model('user', userSchema);

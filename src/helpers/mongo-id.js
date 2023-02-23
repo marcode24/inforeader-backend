@@ -1,8 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const isMongoId = (value) => {
-  return mongoose.Types.ObjectId.isValid(value);
-};
+const isMongoId = (value) => mongoose.Types.ObjectId.isValid(value);
 
 module.exports = {
   isMongoId,

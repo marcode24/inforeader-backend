@@ -1,12 +1,12 @@
-const { request, response } = require("express");
-const bcrypt = require("bcrypt");
+const { request, response } = require('express');
+const bcrypt = require('bcrypt');
 
-const User = require("../models/user");
-const Website = require("../models/webSite");
-const Feed = require("../models/feed");
+const Website = require('../models/webSite');
+const User = require('../models/user');
+const Feed = require('../models/feed');
 
-const { modifiyPreference } = require("../helpers/modify-preferences");
-const { generateJWT } = require("../utils/jwt");
+const { modifiyPreference } = require('../helpers/modify-preferences');
+const { generateJWT } = require('../utils/jwt');
 
 const createUser = async (req = request, res = response) => {
   try {
@@ -15,7 +15,7 @@ const createUser = async (req = request, res = response) => {
     if (emailExist) {
       return res.status(400).json({
         ok: false,
-        msg: "email has already been registered",
+        msg: 'email has already been registered',
       });
     }
     const newUser = new User({ email });
@@ -24,73 +24,78 @@ const createUser = async (req = request, res = response) => {
     const userSaved = await newUser.save();
     const [token, userData] = await Promise.all([
       generateJWT(userSaved.id),
-      User.findById(userSaved.id, "-password"),
+      User.findById(userSaved.id, '-password'),
     ]);
-    res.status(201).json({
+    return res.status(201).json({
       ok: true,
       user: userData,
       token,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       ok: false,
-      msg: "Something went wrong",
+      msg: 'Something went wrong',
     });
   }
 };
 
 const modifyPreferences = async (req = request, res = response) => {
-  const id = req.id;
+  const { id } = req;
   try {
     const user = await User.findById(
       id,
-      "_id subscriptions readFeeds savedFeeds"
+      '_id subscriptions readFeeds savedFeeds',
     )
-      .populate("subscriptions", "_id")
-      .populate("readFeeds", "_id")
-      .populate("savedFeeds", "_id");
+      .populate('subscriptions', '_id')
+      .populate('readFeeds', '_id')
+      .populate('savedFeeds', '_id');
+
     if (!user) {
       return res.status(404).json({
         ok: false,
-        msg: "user not found",
+        msg: 'user not found',
       });
     }
+
     const resourceID = req.params.id;
-    const option = req.params.option;
+    const { option } = req.params;
+
     const resources = {
-      subscription: Website.findById(resourceID, "_id name"),
-      read: Feed.findById(resourceID, "_id title"),
-      saved: Feed.findById(resourceID, "_id title"),
+      subscription: Website.findById(resourceID, '_id name'),
+      read: Feed.findById(resourceID, '_id title'),
+      saved: Feed.findById(resourceID, '_id title'),
     };
+
     const resourceFound = await resources[option];
     if (!resourceFound) {
       return res.status(404).json({
         ok: false,
-        msg: "resource not found",
+        msg: 'resource not found',
       });
     }
+
     const preferenceModified = await modifiyPreference(
       option,
       user,
-      resourceID
+      resourceID,
     );
+
     if (!preferenceModified) {
       return res.status(400).json({
         ok: false,
-        msg: "preference was not modified correctly",
+        msg: 'preference was not modified correctly',
       });
     }
-    res.json({
+
+    return res.json({
       ok: true,
       user,
-      msg: "preferences updated correctly",
+      msg: 'preferences updated correctly',
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       ok: false,
-      msg: "Something went wrong",
+      msg: 'Something went wrong',
     });
   }
 };
@@ -103,21 +108,20 @@ const setTheme = async (req = request, res = response) => {
     if (!userDB) {
       return res.json({
         ok: false,
-        msg: "user not found, try again",
+        msg: 'user not found, try again',
       });
     }
 
     userDB.darkMode = darkMode;
     await userDB.save();
-    res.status(200).json({
+    return res.status(200).json({
       ok: true,
-      msg: "theme updated correctly",
+      msg: 'theme updated correctly',
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       ok: false,
-      msg: "Something went wrong",
+      msg: 'Something went wrong',
     });
   }
 };
@@ -128,15 +132,14 @@ const updateInfo = async (req = request, res = response) => {
     userDB.name = req.body.name || null;
     userDB.lastName = req.body.lastName || null;
     await userDB.save();
-    res.json({
+    return res.json({
       ok: true,
-      msg: "user info updated correctly",
+      msg: 'user info updated correctly',
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       ok: false,
-      msg: "Something went wrong",
+      msg: 'Something went wrong',
     });
   }
 };
