@@ -7,6 +7,7 @@ module.exports = {
   },
   extends: 'airbnb-base',
   overrides: [],
+  plugins: ['import'],
   parserOptions: {
     ecmaVersion: 'latest',
   },
@@ -22,5 +23,9 @@ module.exports = {
     'no-tabs': 'error',
     semi: ['error', 'always'],
     'space-before-blocks': 'error',
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/no-duplicates': 'error',
+    'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1, maxBOF: 0 }],
   },
 };
