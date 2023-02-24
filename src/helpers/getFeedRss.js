@@ -1,101 +1,86 @@
 const Parser = require('rss-parser');
 const { stripHtml } = require('string-strip-html');
 const { regexFirstImage } = require('../constants/regex');
+
 const Feed = require('../models/feed');
-const { getAllWebsites } = require('./getWebsites');
+const WebSite = require('../models/webSite');
 
 const parser = new Parser();
 
 const getFeedRss = async (link) => new Promise((resolve, reject) => {
-  parser.parseURL(link, (err, feed) => {
-    err ? reject() : resolve(feed);
-  });
+  parser.parseURL(link, (err, feed) => (err ? reject() : resolve(feed)));
 });
 
 const saveFeedRssItems = async (websites) => {
   try {
-    const feedRssPromises = [];
-    websites.forEach((item) => feedRssPromises.push(getFeedRss(item.linkFeed)));
-    let allRss = await Promise.allSettled(feedRssPromises);
-    const rejectedLinks = [];
+    const feedRssPromises = websites.map((item) => getFeedRss(item.linkFeed));
+    const feedsPromisesResolved = await Promise.allSettled(feedRssPromises);
 
-    allRss.forEach((rss, index) => {
-      // check if result has no error
+    const rejectedLinks = feedsPromisesResolved.reduce((acc, rss, index) => {
       if (rss.status === 'rejected') {
         const { name, link, linkFeed } = websites[index];
-        rejectedLinks.push({
-          name,
-          link,
-          linkFeed,
-        });
+        acc.push({ name, link, linkFeed });
       }
-    });
+      return acc;
+    }, []);
 
-    // filter rss resolved and set Website ID from DB
-    allRss = allRss
+    const feedsResolved = feedsPromisesResolved
       .filter((rss) => rss.status === 'fulfilled')
       .map((rss) => {
         const wbFound = websites.find(
           (website) => website.name === rss.value.title
             || website.link === rss.value.link,
         );
-        rss.websiteDB = wbFound?._id;
+        rss.websiteDB = wbFound?._id || null;
         return rss;
       });
 
-    if (allRss.length > 0) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const itemRss of allRss) {
+    if (feedsResolved.length > 0) {
+      await Promise.all(feedsResolved.map(async (itemRss) => {
         const itemsFeed = itemRss.value.items;
-        // eslint-disable-next-line no-restricted-syntax
-        for (const item of itemsFeed) {
-          // validate if feed exist in DB
-          // eslint-disable-next-line no-await-in-loop
-          const feedExist = await Feed.findOne(
-            {
-              writer: item.author || item.creator,
-              title: item.title,
-              pubDate: item.isoDate,
-            },
-            'title writer pubDate',
-          );
+        await Promise.all(itemsFeed.map(async (item) => {
+          const feedExist = await Feed.findOne({
+            $or: [
+              { title: item.title },
+              { writer: item.author || item.creator },
+              { pubDate: item.isoDate },
+            ],
+          }, 'title writer pubDate');
+
           if (!feedExist) {
-            // create new feed
             const itemContent = stripHtml(item.content, {
               ignoreTags: ['img', 'p', 'a', 'strong', 'h2', 'ul', 'li'],
               skipHtmlDecoding: false,
             }).result;
-            // get first image from content
-            const urls = [];
-            let m;
-            // eslint-disable-next-line no-cond-assign
-            while ((m = regexFirstImage.exec(itemContent))) {
-              urls.push(m[1]);
-            }
+
+            const feedImages = Array
+              .from(item.content.matchAll(regexFirstImage), (m) => m[1]);
+
             const newFeed = new Feed({
               writer: item.author || item.creator || '',
               title: item.title || '',
               pubDate: item.isoDate,
               content: itemContent,
-              image: urls[0] || null,
+              image: feedImages.length > 0 ? feedImages[0] : null,
               link: item.link,
               website: itemRss.websiteDB,
             });
-            // eslint-disable-next-line no-await-in-loop
+
             await newFeed.save();
           }
-        }
-      }
+        }));
+      }));
     }
+
     return { status: true, rejectedLinks };
   } catch (error) {
-    throw new Error('something went wrong, parsing feeds');
+    throw new Error('something went wrong while parsing feeds');
   }
 };
 
 const updateFeedRssItems = async () => {
   try {
-    const websites = await getAllWebsites();
+    const websites = await WebSite.find({}, '-image -description -__v');
     if (websites) {
       const result = await saveFeedRssItems(websites);
       return result;
