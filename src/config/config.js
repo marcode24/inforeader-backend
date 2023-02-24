@@ -1,4 +1,4 @@
-const joi = require("joi");
+const joi = require('joi');
 
 const envVarsSchema = joi
   .object()
@@ -10,7 +10,7 @@ const envVarsSchema = joi
   .unknown();
 
 const { value: envVars, error } = envVarsSchema
-  .prefs({ errors: { label: "key" } })
+  .prefs({ errors: { label: 'key' } })
   .validate(process.env);
 
 if (error) {

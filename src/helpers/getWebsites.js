@@ -1,4 +1,4 @@
-const WebSite = require("../models/webSite");
+const WebSite = require('../models/webSite');
 
 const getAllWebsites = async () => {
   const websites = await WebSite.find();
@@ -6,7 +6,8 @@ const getAllWebsites = async () => {
 };
 
 const getWebsiteById = async (id) => {
-  return await WebSite.findById(id);
+  const website = await WebSite.findById(id);
+  return website;
 };
 
 module.exports = {

@@ -1,5 +1,5 @@
-const { Schema, model, SchemaTypes } = require("mongoose");
-const { defaultImageWebsite } = require("../constants/images");
+const { Schema, model, SchemaTypes } = require('mongoose');
+const { defaultImageWebsite } = require('../constants/images');
 
 const feedSchema = Schema({
   writer: {
@@ -26,9 +26,9 @@ const feedSchema = Schema({
   },
   website: {
     type: SchemaTypes.ObjectId,
-    ref: "webSite",
+    ref: 'webSite',
     default: {},
   },
 });
 
-module.exports = model("feed", feedSchema);
+module.exports = model('feed', feedSchema);

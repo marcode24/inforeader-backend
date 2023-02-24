@@ -1,14 +1,14 @@
-const { request, response } = require("express");
-const { defaultImageWebsite } = require("../constants/images");
-const { getFeedRss, updateFeedRssItems } = require("../helpers/getFeedRss");
-const WebSite = require("../models/webSite");
+const { request, response } = require('express');
+const { defaultImageWebsite } = require('../constants/images');
+const { getFeedRss, updateFeedRssItems } = require('../helpers/getFeedRss');
+const WebSite = require('../models/webSite');
 
 const createWebSite = async (req = request, res = response) => {
   const url = req.body.url || null;
   if (!url) {
     return res.status(400).json({
       ok: false,
-      msg: "must provide a url",
+      msg: 'must provide a url',
     });
   }
 
@@ -17,19 +17,20 @@ const createWebSite = async (req = request, res = response) => {
     if (existWebsite) {
       return res.status(400).json({
         ok: false,
-        msg: "url has been registered",
+        msg: 'url has been registered',
       });
     }
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       ok: false,
-      msg: "feed not found, try again",
+      msg: 'feed not found, try again',
     });
   }
 
   try {
-    const { title, description, link, ...feed } = await getFeedRss(url);
+    const {
+      title, description, link, ...feed
+    } = await getFeedRss(url);
     const webSiteImage = (feed.image && feed.image.url) || defaultImageWebsite;
     const newWebSite = new WebSite({
       name: title,
@@ -39,14 +40,14 @@ const createWebSite = async (req = request, res = response) => {
       linkFeed: url,
     });
     await newWebSite.save();
-    res.json({
+    return res.json({
       ok: true,
-      msg: "website created correctly",
+      msg: 'website created correctly',
     });
   } catch (error) {
     return res.status(404).json({
       ok: false,
-      msg: "something went wrong, try again",
+      msg: 'something went wrong, try again',
     });
   }
 };
@@ -56,14 +57,14 @@ const updateWebsites = async (req, res) => {
   if (!status) {
     return res.status(500).json({
       ok: false,
-      msg: "Something went wrong, try again",
+      msg: 'Something went wrong, try again',
     });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     ok: true,
     rejectedLinks,
-    msg: "all updated",
+    msg: 'all updated',
   });
 };
 
@@ -81,10 +82,9 @@ const getWebsites = async (req = request, res = response) => {
       websites,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       ok: false,
-      msg: "Something went wrong",
+      msg: 'Something went wrong',
     });
   }
 };

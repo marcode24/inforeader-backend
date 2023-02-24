@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const webSiteSchema = Schema({
   name: {
@@ -21,4 +21,4 @@ const webSiteSchema = Schema({
   },
 });
 
-module.exports = model("webSite", webSiteSchema);
+module.exports = model('webSite', webSiteSchema);
