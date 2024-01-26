@@ -1,7 +1,9 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is the backend of the InfoReader project. It is a REST API that is used to store and retrieve data from the database",
+  "author": "Marco Cruz - marcode24",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,9 +14,6 @@
     "lint:watch": "npm run lint -- --watch",
     "prepare": "husky install"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
@@ -34,5 +33,38 @@
     "eslint-plugin-import": "^2.27.5",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcode24/inforeader-backend",
+    "directory": "inforeader-backend"
+  },
+  "bugs": {
+    "url": "https://github.com/marcode24/inforeader-backend/issues"
+  },
+  "homepage": "https://github.com/marcode24/inforeader-backend#readme",
+  "keywords": [
+    "backend",
+    "inforeader",
+    "rss",
+    "api",
+    "rest",
+    "express",
+    "mongoose",
+    "mongodb",
+    "nodejs",
+    "javascript",
+    "cors",
+    "dotenv",
+    "joi",
+    "jsonwebtoken",
+    "node-cron",
+    "rss-parser",
+    "string-strip-html",
+    "uuid",
+    "bcrypt",
+    "eslint",
+    "husky",
+    "lint-staged"
+  ]
 }
