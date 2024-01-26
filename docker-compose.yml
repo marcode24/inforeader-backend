@@ -1,9 +1,9 @@
-version: '3.3'
+version: '3.7'
 
 services:
   mongo:
     container_name: inforeader_mongo
-    image: mongo:4.4
+    image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
