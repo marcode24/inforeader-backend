@@ -9,6 +9,6 @@ const router = Router();
 
 router.get('/', getWebsites);
 router.post('/', createWebSite);
-router.post('/update', updateWebsites);
+router.get('/update', updateWebsites);
 
 module.exports = router;
