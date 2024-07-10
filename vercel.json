@@ -14,16 +14,11 @@
       "src": "/(.*)",
       "dest": "src/index.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "OPTIONS"]
-    },
-    {
-      "src": "/api/feeds",
-      "dest": "src/jobs/feeds.js",
-      "methods": ["GET"]
     }
   ],
   "crons": [
     {
-      "path": "/api/feeds",
+      "path": "/api/v1/website/update",
       "schedule": "0 12 * * *"
     }
   ]
