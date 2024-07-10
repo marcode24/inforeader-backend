@@ -11,5 +11,12 @@
       "dest": "src/index.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "OPTIONS"]
     }
+  ],
+  "crons": [
+    {
+      "name": "every minute",
+      "path": "/src/jobs/feeds",
+      "schedule": "*/3 * * * *"
+    }
   ]
 }
