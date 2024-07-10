@@ -23,7 +23,6 @@
   ],
   "crons": [
     {
-      "name": "every minute",
       "path": "/api/feeds",
       "schedule": "0 12 * * *"
     }
