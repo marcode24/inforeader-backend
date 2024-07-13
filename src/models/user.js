@@ -53,6 +53,13 @@ const userSchema = Schema({
       default: [],
     },
   ],
+  likedFeeds: [
+    {
+      type: SchemaTypes.ObjectId,
+      ref: 'feed',
+      default: [],
+    },
+  ],
 });
 
 module.exports = model('user', userSchema);
