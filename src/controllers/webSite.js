@@ -2,6 +2,7 @@ const { request, response } = require('express');
 const { defaultImageWebsite } = require('../constants/images');
 const { getFeedRss, updateFeedRssItems } = require('../helpers/getFeedRss');
 const WebSite = require('../models/webSite');
+const Feed = require('../models/feed');
 
 const createWebSite = async (req = request, res = response) => {
   const url = req.body.url || null;
@@ -69,18 +70,68 @@ const updateWebsites = async (req, res) => {
 };
 
 const getWebsites = async (req = request, res = response) => {
-  const { skip = 0, limit = 5, all = false } = req.query;
+  const {
+    skip = 0, limit = 5, all = false, count = false,
+  } = req.query;
   let websites;
   try {
     if (!JSON.parse(all)) {
-      websites = await WebSite.find().skip(skip).limit(limit);
+      websites = await WebSite.find().skip(parseInt(skip, 10)).limit(parseInt(limit, 10));
     } else {
       websites = await WebSite.find();
     }
-    res.status(200).json({
-      ok: true,
-      websites,
-    });
+
+    if (JSON.parse(count)) {
+      // Realizar la agregación para contar feeds por websites
+      const feedCounts = await Feed.aggregate([
+        {
+          $lookup: {
+            from: 'websites',
+            localField: 'website',
+            foreignField: '_id',
+            as: 'websiteDetails',
+          },
+        },
+        { $unwind: '$websiteDetails' },
+        {
+          $group: {
+            _id: '$websiteDetails._id',
+            websiteName: { $first: '$websiteDetails.name' },
+            websiteLink: { $first: '$websiteDetails.link' },
+            feedCount: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            websiteId: '$_id',
+            websiteName: 1,
+            websiteLink: 1,
+            feedCount: 1,
+          },
+        },
+      ]);
+
+      // Mapear los resultados de la consulta de websites con los conteos de feeds
+      const websitesWithCounts = websites.map((website) => {
+        const feedCountInfo = feedCounts
+          .find((feedCount) => feedCount.websiteId.equals(website._id));
+        return {
+          ...website.toObject(),
+          feedCount: feedCountInfo ? feedCountInfo.feedCount : 0,
+        };
+      });
+
+      res.status(200).json({
+        ok: true,
+        websites: websitesWithCounts,
+      });
+    } else {
+      res.status(200).json({
+        ok: true,
+        websites,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       ok: false,
