@@ -33,6 +33,10 @@ const feedSchema = Schema({
     ref: 'webSite',
     default: {},
   },
+  readingTime: {
+    type: Number,
+    default: 0,
+  },
 });
 
 module.exports = model('feed', feedSchema);

@@ -4,6 +4,7 @@ const { regexFirstImage } = require('../constants/regex');
 
 const Feed = require('../models/feed');
 const WebSite = require('../models/webSite');
+const calculateReadingTime = require('./getReadingTime');
 
 const parser = new Parser();
 
@@ -56,6 +57,7 @@ const saveFeedRssItems = async (websites) => {
             const feedImages = Array
               .from(item.content.matchAll(regexFirstImage), (m) => m[1]);
 
+            const readingTime = calculateReadingTime(itemContent);
             const newFeed = new Feed({
               writer: item.author || item.creator || '',
               title: item.title || '',
@@ -64,6 +66,7 @@ const saveFeedRssItems = async (websites) => {
               image: feedImages.length > 0 ? feedImages[0] : null,
               link: item.link,
               website: itemRss.websiteDB,
+              readingTime,
             });
 
             await newFeed.save();
