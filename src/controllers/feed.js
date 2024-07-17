@@ -6,11 +6,16 @@ const User = require('../models/user');
 const getFeeds = async (req = request, res = response) => {
   try {
     const { skip = 0, limit = 20 } = req.query;
-    const feeds = await Feed.find({}, 'title pubDate image writer likes readingTime', {
-      limit,
-      skip,
-      sort: { pubDate: -1 },
-    }).populate({ path: 'website', select: 'name' });
+
+    const feeds = await Feed.find(
+      {},
+      'title pubDate image writer likes readingTime views',
+      {
+        limit,
+        skip,
+        sort: { pubDate: -1 },
+      },
+    ).populate({ path: 'website', select: 'name' });
     res.status(200).json({
       ok: true,
       feeds,
@@ -46,6 +51,12 @@ const getFeedById = async (req = request, res = response) => {
         msg: 'Feed not found, try again',
       });
     }
+
+    if (typeof feedDB.views !== 'number') {
+      feedDB.views = 0;
+    }
+
+    await Feed.findByIdAndUpdate(id, { views: feedDB.views + 1 });
     return res.status(200).json({
       ok: true,
       feed: feedDB,
@@ -77,7 +88,7 @@ const getFeedsByWebsite = async (req = request, res = response) => {
   try {
     const feeds = await Feed.find(
       { website: id },
-      'title pubDate image writer',
+      'title pubDate image writer views',
       {
         limit,
         skip,
@@ -113,7 +124,7 @@ const getFeedsByUser = async (req = request, res = response) => {
       {
         [fieldToFilter]: { $in: userDB[option] },
       },
-      'title pubDate image writer',
+      'title pubDate image writer likes views',
       filter === 'saved'
         ? { ...optionsFinding }
         : { ...optionsFinding, sortFeeds },
@@ -136,7 +147,7 @@ const searchFeeds = async (req = request, res = response) => {
     const regexQuery = new RegExp(query, 'i');
     const feedsFound = await Feed.find(
       { title: regexQuery },
-      'title pubDate image writer',
+      'title pubDate image writer likes views',
       {
         limit,
         skip,
