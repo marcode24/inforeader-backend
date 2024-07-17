@@ -37,6 +37,10 @@ const feedSchema = Schema({
     type: Number,
     default: 0,
   },
+  views: {
+    type: Number,
+    default: 0,
+  },
 });
 
 module.exports = model('feed', feedSchema);
