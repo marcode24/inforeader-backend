@@ -113,7 +113,7 @@ const getFeedsByUser = async (req = request, res = response) => {
       {
         [fieldToFilter]: { $in: userDB[option] },
       },
-      'title pubDate image writer',
+      'title pubDate image writer likes',
       filter === 'saved'
         ? { ...optionsFinding }
         : { ...optionsFinding, sortFeeds },
@@ -136,7 +136,7 @@ const searchFeeds = async (req = request, res = response) => {
     const regexQuery = new RegExp(query, 'i');
     const feedsFound = await Feed.find(
       { title: regexQuery },
-      'title pubDate image writer',
+      'title pubDate image writer likes',
       {
         limit,
         skip,
