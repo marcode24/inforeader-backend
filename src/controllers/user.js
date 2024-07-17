@@ -42,10 +42,12 @@ const createUser = async (req = request, res = response) => {
 const modifyPreferences = async (req = request, res = response) => {
   const { id } = req;
   try {
-    const user = await User.findById(id, '_id subscriptions readFeeds savedFeeds')
+    const fieldsToPopulate = '_id subscriptions readFeeds savedFeeds likedFeeds';
+    const user = await User.findById(id, fieldsToPopulate)
       .populate('subscriptions', '_id')
       .populate('readFeeds', '_id')
-      .populate('savedFeeds', '_id');
+      .populate('savedFeeds', '_id')
+      .populate('likedFeeds', '_id');
 
     if (!user) {
       return res.status(404).json({ ok: false, msg: 'user not found' });
@@ -53,11 +55,11 @@ const modifyPreferences = async (req = request, res = response) => {
 
     const resourceID = req.params.id;
     const { option } = req.params;
-
     const resources = {
       subscription: Website.findById(resourceID, '_id name'),
       read: Feed.findById(resourceID, '_id title'),
       saved: Feed.findById(resourceID, '_id title'),
+      liked: Feed.findById(resourceID, '_id title likes'),
     };
 
     const resourceFound = await resources[option];
@@ -65,7 +67,9 @@ const modifyPreferences = async (req = request, res = response) => {
       return res.status(404).json({ ok: false, msg: 'resource not found' });
     }
 
-    const preferenceModified = await modifiyPreference(option, user, resourceID);
+    const preferenceModified = await modifiyPreference(
+      { option, user, resource: resourceFound },
+    );
 
     if (!preferenceModified) {
       return res.status(400).json({

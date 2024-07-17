@@ -24,10 +24,18 @@ const feedSchema = Schema({
     type: String,
     default: defaultImageWebsite,
   },
+  likes: {
+    type: Number,
+    default: 0,
+  },
   website: {
     type: SchemaTypes.ObjectId,
     ref: 'webSite',
     default: {},
+  },
+  readingTime: {
+    type: Number,
+    default: 0,
   },
 });
 

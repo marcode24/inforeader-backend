@@ -6,6 +6,7 @@ const envVarsSchema = joi
     PORT: joi.number().positive().required(),
     MONGO_URL: joi.string().required(),
     JWT_SECRET: joi.string().required(),
+    WORDS_PER_MINUTE: joi.number().positive().required(),
   })
   .unknown();
 
@@ -21,6 +22,7 @@ const configEnv = {
   mongoUrl: envVars.MONGO_URL,
   port: envVars.PORT,
   jwtSecret: envVars.JWT_SECRET,
+  wordsPerMinute: envVars.WORDS_PER_MINUTE,
 };
 
 module.exports = {

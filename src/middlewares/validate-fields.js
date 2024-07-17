@@ -5,7 +5,7 @@ const {
   validateText,
 } = require('../utils/regex-validations');
 
-const validOptions = ['subscription', 'read', 'saved'];
+const validOptions = ['subscription', 'read', 'saved', 'liked'];
 
 const validateCreateUser = (req, res, next) => {
   const { email = null, password = null } = req.body;

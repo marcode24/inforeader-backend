@@ -6,7 +6,7 @@ const User = require('../models/user');
 const getFeeds = async (req = request, res = response) => {
   try {
     const { skip = 0, limit = 20 } = req.query;
-    const feeds = await Feed.find({}, 'title pubDate image writer', {
+    const feeds = await Feed.find({}, 'title pubDate image writer likes readingTime', {
       limit,
       skip,
       sort: { pubDate: -1 },
